@@ -3,6 +3,28 @@ import streamlit as st
 import string
 import itertools
 
+def prepare_groups_for_download(groups, group_labels, column_names):
+    # Add a 'Group' column to each group and concatenate them into a single DataFrame
+    labeled_groups = []
+    for group, label in zip(groups, group_labels):
+        group_with_label = group.copy()
+        group_with_label['Group'] = label
+        labeled_groups.append(group_with_label)
+    
+    # Concatenate all groups into one DataFrame
+    combined_df = pd.concat(labeled_groups, ignore_index=True)
+    
+    # Move 'Group' column to be the first column
+    cols = ['Group'] + [col for col in combined_df.columns if col != 'Group']
+    combined_df = combined_df[cols]
+    
+    # Sort the DataFrame by the 'Group' column
+    combined_df = combined_df.sort_values(by='Group')
+    combined_df = combined_df.rename(column_names, axis=1)
+    
+    return combined_df
+
+
 def match_availability_and_allocate(group, group_size=3, id_col='A', freq_col='H', day_col='I', time_col='J'):
     """
     This function prepares the regrouping map and strict criteria, then allocates participants
@@ -325,3 +347,16 @@ if uploaded_file:
     for group, label in zip(groups, group_labels):
         st.write(label)
         st.write(group)
+
+
+    combined_df = prepare_groups_for_download(groups, group_labels, column_names)
+    
+    # Convert DataFrame to CSV
+    csv = combined_df.to_csv(index=False).encode('utf-8')
+    
+    # Provide download button
+    st.download_button(
+        label="Download Groups as CSV",
+        data=csv,
+        file_name='grouped_participants.csv',
+        mime='text/csv',)
