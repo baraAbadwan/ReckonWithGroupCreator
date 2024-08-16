@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 from src.loader import load_prep_data
-from src.grouping import match_availability_and_allocate, filter_by_racial_literacy, map_to_closest_timezone, hard_split
+from src.grouping import match_availability_and_allocate, filter_by_racial_literacy, map_to_closest_timezone, hard_split, split_into_groups
 
 def prepare_groups_for_download(groups, group_labels, column_names):
     # Add a 'Group' column to each group and concatenate them into a single DataFrame
