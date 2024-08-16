@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 from src.loader import load_prep_data
-from src.grouping import match_availability_and_allocate
+from src.grouping import match_availability_and_allocate, filter_by_racial_literacy, map_to_closest_timezone, hard_split
 
 def prepare_groups_for_download(groups, group_labels, column_names):
     # Add a 'Group' column to each group and concatenate them into a single DataFrame
@@ -25,48 +25,7 @@ def prepare_groups_for_download(groups, group_labels, column_names):
     return combined_df
 
 
-def filter_by_racial_literacy(df, bins, on_col='AO'):
-    # Split the DataFrame based on the bins provided
-    df_list = condition_split(df, on_col, bins)
-    
-    return df_list
 
-def condition_split(df, on_col, conditions):
-    df_list = [df[df[on_col].isin(condition)] for condition in conditions]
-    return df_list
-
-def hard_split(df, on_col):
-    # Get unique values in the specified column
-    unique_values = df[on_col].unique()
-    # Create a separate DataFrame for each unique value
-    df_list = [df.loc[df[on_col] == value].copy() for value in unique_values]
-    
-    return df_list
-
-def split_into_groups(group, n):
-    # Shuffle the DataFrame
-    shuffled_group = group.sample(frac=1).reset_index(drop=True)
-    
-    # Split into chunks of size n
-    subgroups = [shuffled_group.iloc[i:i+n] for i in range(0, len(shuffled_group), n)]
-    
-    return subgroups
-
-def map_to_closest_timezone(df, timezone_col='E'):
-    # Define a mapping from less common time zones to their closest major time zones
-    timezone_mapping = {
-        'AKST': 'PST',  # Alaska Standard Time to Pacific Standard Time
-        'MST': 'CST',   # Mountain Standard Time to Central Standard Time
-        # Keep the major time zones unchanged
-        'PST': 'PST',
-        'CST': 'CST',
-        'EST': 'EST'
-    }
-    
-    # Apply the mapping to the DataFrame
-    df[timezone_col] = df[timezone_col].map(timezone_mapping).fillna(df[timezone_col])
-    
-    return df
 
 # Main Streamlit app
 st.title("Participant Grouping Based on Multiple Criteria")
