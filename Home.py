@@ -248,8 +248,7 @@ def split_into_groups(group, n):
 st.title("Participant Grouping Based on Multiple Criteria")
 
 uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
-if not uploaded_file:
-    uploaded_file='data/participant_data.csv'
+
 if uploaded_file:
     df, column_names = load_prep_data(uploaded_file)
     # st.write(column_names['AC'])
