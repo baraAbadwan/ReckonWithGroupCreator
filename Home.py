@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 from src.loader import load_prep_data
-from src.grouping import match_availability_and_allocate, filter_by_racial_literacy, map_to_closest_timezone, hard_split, split_into_groups
+from src.grouping import match_availability_and_allocate, filter_by_racial_literacy, filter_by_family_arrival, map_to_closest_timezone, hard_split, split_into_groups
 
 def prepare_groups_for_download(groups, group_labels, column_names):
     # Add a 'Group' column to each group and concatenate them into a single DataFrame
@@ -43,13 +43,43 @@ if uploaded_file:
     with col2:
         group_by = st.multiselect(
             "Select criteria for grouping",
-            options=['Racial Literacy', 'Timezone', 'Matching Availability', 'Into Threes']
+            options=['Racial Literacy', 'Timezone', 'Matching Availability', 'Into Threes', 'Family Arrival']
         )
 
 
     # Initialize the groups list with the entire dataframe as the starting point
     groups = [df]
     group_labels = ['All Participants']
+
+
+    if 'Family Arrival' in group_by:
+        default_bins = [('1600s', '1700s'), ('1700s', '1800s'), ('1900s', '2000s')]
+
+        # Possible scores for racial literacy
+        possible_scores = list(['1600s', '1700s', '1800s', '1900s','2000s'])  # Assuming scores are in the range of 1 to 7
+
+        # Streamlit multiselect inputs to allow users to modify the bins
+        with col1:
+            low_bin = st.multiselect("Select scores for Arrival 1", possible_scores, default_bins[0])
+            medium_bin = st.multiselect("Select scores for Arrival 2", possible_scores, default_bins[1])
+            high_bin = st.multiselect("Select scores for Arrival 3", possible_scores, default_bins[2])
+
+        # Create the bins list from user input
+        bins = [low_bin, medium_bin, high_bin]
+
+        # Process each group individually
+        new_groups = []
+        new_labels = []
+
+        for group, label in zip(groups, group_labels):
+            racial_literacy_splits = filter_by_family_arrival(group, bins)
+            for subgroup, r_label in zip(racial_literacy_splits, ["Old", "Medium", "New"]):
+                new_groups.append(subgroup)
+                new_labels.append(f"{label}, Arrival {r_label}")
+
+        groups = new_groups
+        group_labels = new_labels
+
 
     if 'Racial Literacy' in group_by:
         default_bins = [(1, 2, 3), (4, 5), (6, 7)]
