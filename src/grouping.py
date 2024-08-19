@@ -194,6 +194,13 @@ def filter_by_racial_literacy(df, bins, on_col='AO'):
     
     return df_list
 
+def filter_by_family_arrival(df, bins, on_col='AC'):
+    # Split the DataFrame based on the bins provided
+    df_list = condition_split(df, on_col, bins)
+    
+    return df_list
+
+
 def condition_split(df, on_col, conditions):
     df_list = [df[df[on_col].isin(condition)] for condition in conditions]
     return df_list
