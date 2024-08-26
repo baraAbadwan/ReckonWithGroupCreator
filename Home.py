@@ -43,7 +43,7 @@ if uploaded_file:
     with col2:
         group_by = st.multiselect(
             "Select criteria for grouping",
-            options=['Racial Literacy', 'Timezone', 'Matching Availability', 'Into Threes', 'Family Arrival', 'Class', 'Geography', 'Age', 'Religion']
+            options=['Racial Literacy', 'Timezone', 'Matching Availability', 'Into Threes', 'Family Arrival', 'Class', 'Geography', 'Age', 'Religion', 'Caregiving']
         )
 
 
@@ -190,6 +190,22 @@ if uploaded_file:
                 # Append the new groups and labels
                 new_groups.append(subgroup)
                 timezone_label = f"Religion {subgroup['R'].iloc[0]}"
+                new_labels.append(f"{label}, {timezone_label}" if label != "All Participants" else timezone_label)
+
+        groups = new_groups
+        group_labels = new_labels
+
+    if 'Caregiving' in group_by:
+        new_groups = []
+        new_labels = []
+
+        for group, label in zip(groups, group_labels):
+
+            timezone_splits = hard_split(group, 'Y')
+            for subgroup in timezone_splits:
+                # Append the new groups and labels
+                new_groups.append(subgroup)
+                timezone_label = f"Caregiving {subgroup['Y'].iloc[0]}"
                 new_labels.append(f"{label}, {timezone_label}" if label != "All Participants" else timezone_label)
 
         groups = new_groups
