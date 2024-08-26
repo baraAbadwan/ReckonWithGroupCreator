@@ -53,7 +53,7 @@ if uploaded_file:
                      'Age', 
                      'Religion', 
                      'Caregiving',
-                     'Childhood class', 
+                     'Childhood Class', 
                      'Childhood Geography']
         )
 
@@ -158,7 +158,7 @@ if uploaded_file:
         group_labels = new_labels
 
 
-    if 'Childhood class' in group_by:
+    if 'Childhood Class' in group_by:
         new_groups = []
         new_labels = []
 
@@ -167,7 +167,7 @@ if uploaded_file:
             for subgroup in timezone_splits:
                 # Append the new groups and labels
                 new_groups.append(subgroup)
-                timezone_label = f"Childhood class {subgroup['N'].iloc[0]}"
+                timezone_label = f"Childhood Class {subgroup['N'].iloc[0]}"
                 new_labels.append(f"{label}, {timezone_label}" if label != "All Participants" else timezone_label)
 
         groups = new_groups
