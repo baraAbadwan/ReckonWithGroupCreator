@@ -146,6 +146,21 @@ if uploaded_file:
         groups = new_groups
         group_labels = new_labels
 
+    if 'Geography' in group_by:
+        new_groups = []
+        new_labels = []
+
+        for group, label in zip(groups, group_labels):
+            timezone_splits = hard_split(group, 'M')
+            for subgroup in timezone_splits:
+                # Append the new groups and labels
+                new_groups.append(subgroup)
+                timezone_label = f"Geography {subgroup['M'].iloc[0]}"
+                new_labels.append(f"{label}, {timezone_label}" if label != "All Participants" else timezone_label)
+
+        groups = new_groups
+        group_labels = new_labels
+
 
 
 
